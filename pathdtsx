@@ -1,0 +1,47 @@
+import os
+import re
+import pandas as pd
+
+def extract_dtsx_from_bat(bat_file):
+    dtsx_files = []
+    try:
+        with open(bat_file, "r") as f:
+            content = f.read()
+            matches = re.findall(r'[\w\-. ]+\.dtsx', content, flags=re.IGNORECASE)
+            dtsx_files.extend(matches)
+    except Exception as e:
+        print(f"Error reading {bat_file}: {e}")
+    return dtsx_files
+
+
+def get_dtsx_from_path(path):
+    dtsx_files = []
+
+    if os.path.isfile(path):
+        if path.lower().endswith(".dtsx"):
+            dtsx_files.append(os.path.basename(path))
+        elif path.lower().endswith(".bat"):
+            dtsx_files.extend(extract_dtsx_from_bat(path))
+
+    elif os.path.isdir(path):
+        for file in os.listdir(path):
+            if file.lower().endswith(".dtsx"):
+                dtsx_files.append(file)
+
+    return dtsx_files
+
+
+def process_excel(input_excel, output_excel):
+    df = pd.read_excel(input_excel)
+
+    # Assuming column name is "Path"
+    df["DTSX_Files"] = df["Path"].apply(
+        lambda p: "; ".join(get_dtsx_from_path(p))
+    )
+
+    df.to_excel(output_excel, index=False)
+    print(f"✅ Processed Excel saved as: {output_excel}")
+
+
+# Example usage
+process_excel("input.xlsx", "output_with_dtsx.xlsx")
