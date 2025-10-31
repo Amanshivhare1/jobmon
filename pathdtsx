@@ -45,3 +45,29 @@ def process_excel(input_excel, output_excel):
 
 # Example usage
 process_excel("input.xlsx", "output_with_dtsx.xlsx")
+
+
+
+
+----------------------------------------------------------
+
+import paramiko
+
+def get_remote_disks(host, user, password):
+    command = "df -h --output=target,size,used,avail,pcent | tail -n +2"
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    ssh.connect(host, username=user, password=password)
+    stdin, stdout, stderr = ssh.exec_command(command)
+    output = stdout.read().decode().strip()
+    ssh.close()
+
+    print(f"\nServer: {host}")
+    print(f"{'Mount':<15} {'Total':>10} {'Used':>10} {'Avail':>10} {'Use%':>6}")
+    print("-" * 55)
+    for line in output.splitlines():
+        print(line)
+
+if __name__ == "__main__":
+    get_remote_disks("192.168.1.10", "ec2-user", "mypassword")
