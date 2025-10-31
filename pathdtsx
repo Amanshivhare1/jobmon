@@ -71,3 +71,7 @@ def get_remote_disks(host, user, password):
 
 if __name__ == "__main__":
     get_remote_disks("192.168.1.10", "ec2-user", "mypassword")
+
+--------------------------------
+for /f "skip=1 tokens=1,2,3" %i in ('wmic logicaldisk get Name,Size,FreeSpace') do @if not "%i"=="" @set /a totalGB=%j/1073741824 & @set /a freeGB=%k/1073741824 & @echo Drive: %i  Total: !totalGB! GB  Free: !freeGB! GB
+
