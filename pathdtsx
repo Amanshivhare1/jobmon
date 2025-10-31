@@ -75,3 +75,21 @@ if __name__ == "__main__":
 --------------------------------
 for /f "skip=1 tokens=1,2,3" %i in ('wmic logicaldisk get Name,Size,FreeSpace') do @if not "%i"=="" @set /a totalGB=%j/1073741824 & @set /a freeGB=%k/1073741824 & @echo Drive: %i  Total: !totalGB! GB  Free: !freeGB! GB
 
+--------------------------------
+import wmi
+
+def get_windows_disk_space(host, user, password):
+    conn = wmi.WMI(computer=host, user=user, password=password)
+    print(f"\nDisk space for {host}:")
+    print(f"{'Drive':<6} {'Total(GB)':>10} {'Free(GB)':>10}")
+    print("-" * 30)
+    for disk in conn.Win32_LogicalDisk(DriveType=3):  # DriveType=3 is local disks
+        total_gb = int(disk.Size) // (2**30)
+        free_gb = int(disk.FreeSpace) // (2**30)
+        print(f"{disk.DeviceID:<6} {total_gb:>10} {free_gb:>10}")
+
+if __name__ == "__main__":
+    host = input("Enter Windows server IP/hostname: ")
+    user = input("Username (DOMAIN\\User): ")
+    password = input("Password: ")
+    get_windows_disk_space(host, user, password)
