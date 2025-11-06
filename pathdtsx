@@ -27,6 +27,44 @@ def get_dtsx_from_path(path):
         for file in os.listdir(path):
             if file.lower().endswith(".dtsx"):
                 dtsx_files.append(file)
+-------------------------------
+import os
+import shutil
+
+# File with remote paths
+paths_file = "paths.txt"
+
+# Local directory to copy to
+local_root = r"C:\local_copy\"  # Change to your local path
+
+# Ensure local root exists
+os.makedirs(local_root, exist_ok=True)
+
+with open(paths_file, "r") as file:
+    for line in file:
+        remote_path = line.strip()
+        if not remote_path:
+            continue
+
+        # Extract folder/file name from remote path
+        folder_name = os.path.basename(remote_path.rstrip("\\/"))
+
+        # Destination path on local
+        dest_path = os.path.join(local_root, folder_name)
+
+        try:
+            # Copy folder or file
+            if os.path.isdir(remote_path):
+                shutil.copytree(remote_path, dest_path, dirs_exist_ok=True)
+            elif os.path.isfile(remote_path):
+                shutil.copy2(remote_path, dest_path)
+            else:
+                print(f"⚠ Path not found: {remote_path}")
+        except Exception as e:
+            print(f"❌ Failed to copy {remote_path} -> {dest_path}: {e}")
+
+print("✅ All paths processed.")
+
 
     return dtsx_files
 
