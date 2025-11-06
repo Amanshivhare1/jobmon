@@ -207,4 +207,36 @@ with open(paths_file, "r") as file:
 
 print("✅ All paths processed.")
 
+----------------------------------
+
+import os
+import re
+
+# CONFIG
+local_root = r"C:\local_copy"  # change to your local folder
+
+# Regex: password with optional spaces around '='
+pattern = re.compile(r'(password\s*=\s*)(\S+)', re.IGNORECASE)
+
+for dirpath, dirnames, filenames in os.walk(local_root):
+    for fname in filenames:
+        file_path = os.path.join(dirpath, fname)
+        try:
+            # Read file as text
+            with open(file_path, 'r', encoding='utf-8') as f:
+                text = f.read()
+        except UnicodeDecodeError:
+            try:
+                with open(file_path, 'r', encoding='latin-1') as f:
+                    text = f.read()
+            except:
+                continue  # skip binary/unreadable files
+
+        # Replace passwords
+        new_text, count = pattern.subn(lambda m: m.group(1) + '*' * len(m.group(2)), text)
+
+        # Write back if changes were made
+        if count > 0:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(new_text)
 
