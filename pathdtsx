@@ -96,19 +96,39 @@ if __name__ == "__main__":
 
 
 -------------------------------------
-root = "/a/b/c/d/"
+# Define your root path (use raw string to handle backslashes)
+root = r"a\b\c\d\"
+
+# Input and output file names
 input_file = "paths.txt"
 output_file = "cleaned_paths.txt"
 
 with open(input_file, "r") as infile, open(output_file, "w") as outfile:
     for line in infile:
         path = line.strip()
-        if root in path:
-            # remove root part first
-            remaining = path[len(root):]
-            # split remaining part by '/' and take only the first folder
-            next_folder = remaining.split('/')[0]
+        if not path:
+            continue  # skip empty lines
+
+        # Ensure consistent backslashes
+        path = path.replace("/", "\\")
+        root_norm = root.replace("/", "\\")
+
+        if root_norm in path:
+            # Remove the root part
+            remaining = path[len(root_norm):]
+
+            # Get the next folder after the root
+            parts = remaining.split("\\")
+            next_folder = parts[0] if parts else ""
+
             if next_folder:
-                cleaned_path = root + next_folder
+                # Build the cleaned path up to that folder
+                cleaned_path = root_norm + next_folder + "\\"
                 outfile.write(cleaned_path + "\n")
+        else:
+            # Skip if path doesn't contain the root
+            continue
+
+print(f"✅ Cleaned paths saved to {output_file}")
+
 
