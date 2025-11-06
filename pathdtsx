@@ -93,3 +93,22 @@ if __name__ == "__main__":
     user = input("Username (DOMAIN\\User): ")
     password = input("Password: ")
     get_windows_disk_space(host, user, password)
+
+
+-------------------------------------
+root = "/a/b/c/d/"
+input_file = "paths.txt"
+output_file = "cleaned_paths.txt"
+
+with open(input_file, "r") as infile, open(output_file, "w") as outfile:
+    for line in infile:
+        path = line.strip()
+        if root in path:
+            # remove root part first
+            remaining = path[len(root):]
+            # split remaining part by '/' and take only the first folder
+            next_folder = remaining.split('/')[0]
+            if next_folder:
+                cleaned_path = root + next_folder
+                outfile.write(cleaned_path + "\n")
+
