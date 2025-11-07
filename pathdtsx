@@ -272,3 +272,27 @@ for dirpath, _, filenames in os.walk(local_root):
         if count > 0:
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(new_content)
+----------------
+import os
+
+def get_folder_size(path):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(path):
+        for f in filenames:
+            try:
+                fp = os.path.join(dirpath, f)
+                if not os.path.islink(fp):
+                    total_size += os.path.getsize(fp)
+            except (FileNotFoundError, PermissionError):
+                continue
+    return total_size
+
+if __name__ == "__main__":
+    network_path = r"\\server\share\folder"  # 🔹 change to your path
+    size_bytes = get_folder_size(network_path)
+    size_gb = size_bytes / (1024 ** 3)
+    size_mb = size_bytes / (1024 ** 2)
+
+    print(f"📁 Folder: {network_path}")
+    print(f"💾 Total Size: {size_gb:.2f} GB ({size_mb:.2f} MB)")
+
