@@ -484,6 +484,36 @@ def main():
 
 if __name__ == "__main__":
     main()
+---------------------------
+
+import os
+
+# --- Configuration ---
+SERVERS_FILE = r"C:\path\to\servers.txt"     # path to your text file
+EXCEL_FOLDER = r"C:\path\to\excel_folder"    # folder where Excel files are stored
+
+# --- Read server names from text file ---
+with open(SERVERS_FILE, 'r') as f:
+    servers = [line.strip() for line in f if line.strip()]  # remove empty lines
+
+# --- Get list of Excel filenames in folder ---
+excel_files = [f for f in os.listdir(EXCEL_FOLDER) if f.endswith('.xlsx')]
+
+# --- Extract server names from Excel filenames ---
+excel_server_names = [os.path.splitext(f)[0].replace('_services', '') for f in excel_files]
+
+# --- Compare ---
+present = [s for s in servers if s in excel_server_names]
+missing = [s for s in servers if s not in excel_server_names]
+
+# --- Print Results ---
+print("✅ Servers with Excel files:")
+for s in present:
+    print("  -", s)
+
+print("\n❌ Servers missing Excel files:")
+for s in missing:
+    print("  -", s)
 
 
 
